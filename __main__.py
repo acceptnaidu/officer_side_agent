@@ -251,7 +251,7 @@ async def view_logs(request):
 # @click.command()
 # @click.option("--host", "host", default="localhost")
 # @click.option("--port", "port", default=10001)
-def main(host="localhost", port=10001):
+def main(host="0.0.0.0", port=10001):
     if os.getenv("GOOGLE_GENAI_USE_VERTEXAI") != "TRUE" and not os.getenv("GOOGLE_API_KEY"):
         raise ValueError(
             "GOOGLE_API_KEY environment variable not set and "
