@@ -16,4 +16,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 ENV PORT=8080
 # Define the default entry point
-CMD ["python", "__main__"]
+CMD ["python", "__main__.py"]
