@@ -1,0 +1,13 @@
+google-adk
+fastapi
+uvicorn
+pydantic
+python-dotenv
+a2a-sdk
+langchain
+langchain-community
+sentence-transformers
+chromadb
+transformers
+torch
+langchain-huggingface
