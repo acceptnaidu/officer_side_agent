@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer Agent LLM Logs</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #282c34; /* Dark background */
+            color: #abb2bf; /* Light grey text */
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .log-entry {
+            background-color: #3a3f4b; /* Slightly lighter dark background for entries */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out;
+        }
+        .log-entry:hover {
+            transform: translateY(-3px);
+        }
+        .log-entry.llm-input {
+            border-left: 6px solid #61afef; /* Blue for input */
+        }
+        .log-entry.llm-output {
+            border-left: 6px solid #98c379; /* Green for output */
+        }
+        .log-entry pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #e0e0e0; /* Lighter text for code */
+        }
+        h1 {
+            color: #e5c07b; /* Yellowish for headings */
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        button {
+            background-color: #c678dd; /* Purple for button */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #9f5bbd; /* Darker purple on hover */
+        }
+        .log-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #56b6c2; /* Cyan for log headers */
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Officer Agent LLM Logs</h1>
+    <button onclick="fetchLogs()">Refresh Logs</button>
+    <div id="log-container"></div>
+
+    <script>
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/logs/raw');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const logs = await response.text();
+                displayLogs(logs);
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+                document.getElementById('log-container').innerHTML = `<div class="log-entry"><pre>Failed to load logs: ${error.message}</pre></div>`;
+            }
+        }
+
+        function displayLogs(logs) {
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = ''; // Clear previous logs
+
+            const lines = logs.split('\n');
+            let currentJsonBlock = [];
+            let currentLogType = ''; // 'input', 'output'
+
+            lines.forEach(line => {
+                if (line.includes('LLM Input: {')) {
+                    if (currentJsonBlock.length > 0) {
+                        appendLogEntry(logContainer, currentLogType, currentJsonBlock.join('\n'));
+                    }
+                    currentJsonBlock = [line.substring(line.indexOf('{'))];
+                    currentLogType = 'input';
+                } else if (line.includes('LLM Final Response: {') || line.includes('LLM Intermediate Response: {')) {
+                    if (currentJsonBlock.length > 0) {
+                        appendLogEntry(logContainer, currentLogType, currentJsonBlock.join('\n'));
+                    }
+                    currentJsonBlock = [line.substring(line.indexOf('{'))];
+                    currentLogType = 'output';
+                } else if (currentJsonBlock.length > 0 && (line.startsWith('{') || line.startsWith(' ') || line.trim() === '')) {
+                    // Continue adding to the current JSON block
+                    currentJsonBlock.push(line);
+                } else {
+                    // If there's an unfinished JSON block, append it
+                    if (currentJsonBlock.length > 0) {
+                        appendLogEntry(logContainer, currentLogType, currentJsonBlock.join('\n'));
+                        currentJsonBlock = [];
+                        currentLogType = '';
+                    }
+                    // Ignore non-LLM log lines
+                }
+            });
+
+            // Append the last log entry if it exists
+            if (currentJsonBlock.length > 0) {
+                appendLogEntry(logContainer, currentLogType, currentJsonBlock.join('\n'));
+            }
+        }
+
+        function appendLogEntry(container, type, content) {
+            const logEntryDiv = document.createElement('div');
+            logEntryDiv.className = `log-entry ${type === 'input' ? 'llm-input' : 'llm-output'}`;
+            const headerText = type === 'input' ? 'LLM Input:' : (content.includes('LLM Final Response') ? 'LLM Final Response:' : 'LLM Intermediate Response:');
+            logEntryDiv.innerHTML = `<div class="log-header">${headerText}</div><pre>${content}</pre>`;
+            container.appendChild(logEntryDiv);
+        }
+
+        // Fetch logs on page load and then every 5 seconds
+        window.onload = () => {
+            fetchLogs();
+            setInterval(fetchLogs, 5000); // Refresh every 5 seconds
+        };
+    </script>
+</body>
+</html>
