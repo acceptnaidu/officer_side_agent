@@ -14,6 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy entire application into the container
 COPY . .
-
+ENV PORT=8080
 # Define the default entry point
-CMD ["python", "-m", "__main__"]
+CMD ["python", "__main__"]
