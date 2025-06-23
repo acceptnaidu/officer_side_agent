@@ -1,12 +1,10 @@
 import sqlite3
 import os
 from google.adk.tools import FunctionTool
+from typing import Optional
+from datetime import datetime
 
 DATABASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'shared_libraries', 'city_office.db')
-
-from typing import Optional
-
-from datetime import datetime
 
 def update_technician_work_date(existing_date: str, updated_date: str, reason_to_reassign: Optional[str] = None):
     """
@@ -66,6 +64,4 @@ def update_technician_work_date(existing_date: str, updated_date: str, reason_to
 
 UPDATE_TECHNICIAN_WORK_DATE_TOOL = FunctionTool(
     func=update_technician_work_date
-    # name="update_technician_work_date",
-    # description="Updates the assigned work date for technicians from an existing date to a new date, and optionally adds a reason for the reassign."
 )

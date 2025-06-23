@@ -14,7 +14,7 @@ def create_agent() -> LlmAgent:
     return LlmAgent(
         model="gemini-2.0-flash-001",
         name="AGENT_ASSIST",
-        description="An agent that assists with various city office tasks, including citizen information support, safety and licensing, civic engagement, public works, sanitation utilities, and ticket management.",
+        description="An agent that assists with various city office tasks, including ticket management for issues and assigning to respective technicians to reslove the issues.",
         instruction =OFFICE_SIDE_AGENT_PROMPT,
         tools=[
             # AgentTool(citizen_info_agent), 

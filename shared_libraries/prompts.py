@@ -25,14 +25,16 @@ Use each tool **only for its specific role**:
 
 ---
 
-### 🧭 Workflow (**Strictly Follow This Order**)
+### Workflow (**Strictly Follow This Order**)
 
 1. **Receive and Understand Query**  
-   Parse the citizen's message. Extract:
+   Parse the citizen's message. 
+   If present extract:
    - Contact details (if any)
    - Issue description
    - Location
    - Timestamp (use current time if missing)
+   **Otherwise, use you own date and create the ticket**
 
 2. **Create Ticket**  
    Use `ticket_management_agent` to log the issue and obtain a `ticket_id`.
