@@ -251,7 +251,7 @@ async def view_logs(request):
 # @click.command()
 # @click.option("--host", "host", default="localhost")
 # @click.option("--port", "port", default=8080)
-def main(host="0.0.0.0", port=8080):
+def main():
     if os.getenv("GOOGLE_GENAI_USE_VERTEXAI") != "TRUE" and not os.getenv("GOOGLE_API_KEY"):
         raise ValueError(
             "GOOGLE_API_KEY environment variable not set and "
@@ -269,7 +269,7 @@ def main(host="0.0.0.0", port=8080):
     agent_card = AgentCard(
         name="City Officer Agent Assistance",
         description="Helps with city issues related questions",
-        url=f"http://{host}:{port}/",
+        url="https://officer-side-agent-871861759609.us-east4.run.app",
         version="1.0.0",
         defaultInputModes=["text"],
         defaultOutputModes=["text"],
@@ -301,7 +301,7 @@ def main(host="0.0.0.0", port=8080):
     starlette_app.add_route("/logs", view_logs)
     starlette_app.add_route("/logs/raw", get_raw_logs)
 
-    uvicorn.run(starlette_app, host=host, port=port)
+    uvicorn.run(starlette_app)
     
 if __name__ == "__main__":
     main()
