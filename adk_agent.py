@@ -1,5 +1,5 @@
 from google.adk.agents import LlmAgent
-from sub_agents.citizen_info_support.citizen_info_agent import citizen_info_agent
+# from sub_agents.citizen_info_support.citizen_info_agent import citizen_info_agent
 from sub_agents.licensing_transport_safety_department.safety_agent import safety_agent
 from sub_agents.parks_community_civic_department.civic_agent import civic_agent
 from sub_agents.public_work_department.public_work_agent import public_work_agent
@@ -17,7 +17,7 @@ def create_agent() -> LlmAgent:
         description="An agent that assists with various city office tasks, including citizen information support, safety and licensing, civic engagement, public works, sanitation utilities, and ticket management.",
         instruction =OFFICE_SIDE_AGENT_PROMPT,
         tools=[
-            AgentTool(citizen_info_agent), 
+            # AgentTool(citizen_info_agent), 
             AgentTool(safety_agent), 
             AgentTool(civic_agent), 
             AgentTool(public_work_agent), 

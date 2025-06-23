@@ -69,7 +69,6 @@ def _content_to_dict(content: types.Content) -> dict:
             parts_data.append({"type": "inline_data", "mime_type": part.inline_data.mime_type, "size": len(part.inline_data.data)})
     return {"parts": parts_data}
 
-
 class ADKAgentExecutor(AgentExecutor):
     """An AgentExecutor that runs an ADK-based Agent."""
 
@@ -163,11 +162,9 @@ class ADKAgentExecutor(AgentExecutor):
             raise RuntimeError(f"Failed to get or create session: {session_id}")
         return session
 
-
 def convert_a2a_parts_to_genai(parts: list[Part]) -> list[types.Part]:
     """Convert a list of A2A Part types into a list of Google Gen AI Part types."""
     return [convert_a2a_part_to_genai(part) for part in parts]
-
 
 def convert_a2a_part_to_genai(part: Part) -> types.Part:
     """Convert a single A2A Part type into a Google Gen AI Part type."""
@@ -190,7 +187,6 @@ def convert_a2a_part_to_genai(part: Part) -> types.Part:
         raise ValueError(f"Unsupported file type: {type(part.file)}")
     raise ValueError(f"Unsupported part type: {type(part)}")
 
-
 def convert_genai_parts_to_a2a(parts: list[types.Part]) -> list[Part]:
     """Convert a list of Google Gen AI Part types into a list of A2A Part types."""
     return [
@@ -198,7 +194,6 @@ def convert_genai_parts_to_a2a(parts: list[types.Part]) -> list[Part]:
         for part in parts
         if (part.text or part.file_data or part.inline_data)
     ]
-
 
 def convert_genai_part_to_a2a(part: types.Part) -> Part:
     """Convert a single Google Gen AI Part type into an A2A Part type."""
@@ -247,10 +242,6 @@ async def view_logs(request):
         logger.error(f"Error reading UI template: {e}")
         return PlainTextResponse(f"Error reading UI template: {e}", status_code=500)
 
-
-# @click.command()
-# @click.option("--host", "host", default="localhost")
-# @click.option("--port", "port", default=8080)
 def main():
     if os.getenv("GOOGLE_GENAI_USE_VERTEXAI") != "TRUE" and not os.getenv("GOOGLE_API_KEY"):
         raise ValueError(
@@ -283,7 +274,7 @@ def main():
         agent=adk_agent,
         artifact_service=InMemoryArtifactService(),
         session_service=InMemorySessionService(),
-        memory_service=InMemoryMemoryService() # Add this line
+        memory_service=InMemoryMemoryService()
     )
     agent_executor = ADKAgentExecutor(runner, agent_card)
 
@@ -301,7 +292,7 @@ def main():
     starlette_app.add_route("/logs", view_logs)
     starlette_app.add_route("/logs/raw", get_raw_logs)
 
-    uvicorn.run(starlette_app)
+    uvicorn.run(starlette_app, host="0.0.0.0", port="8080")
     
 if __name__ == "__main__":
     main()
